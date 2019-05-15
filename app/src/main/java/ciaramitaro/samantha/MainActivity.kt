@@ -1,8 +1,10 @@
 package ciaramitaro.samantha
 
+import android.animation.ValueAnimator
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.SeekBar
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -14,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         //This creates variable with initial textview vertical coordinates
         val initialTextViewTranslationY = textView_progress.translationY
 
+
         seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
             //progress is current progress level that is in the seekbar range of min..max. auto min max is 0..100
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity() {
                 val translationDistance = (initialTextViewTranslationY + progress
                         * resources.getDimension(R.dimen.text_anim_step) * -1)
                 textView_progress.animate().translationY(translationDistance)
+
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -31,16 +35,22 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(p0: SeekBar?) {
                 textView_progress.setTextColor(Color.BLACK)
             }
-
         })
+
 
         button_reset.setOnClickListener{v ->
 
+            //creates a animator object that decreases number
+            val animator = ValueAnimator.ofInt(seekBar.progress, 0)
+            animator.setDuration(1000)
+            animator.addUpdateListener {
+                textView_progress.setText(animator.getAnimatedValue().toString())
+            }
+            animator.start()
+
             textView_progress.animate().rotationBy(360f).setDuration(1000)
                 .translationY(initialTextViewTranslationY)
-            seekBar.progress =0
-
-
+            seekBar.progress=0
 
         }
     }
